@@ -1,0 +1,66 @@
+JIT image resizer. Sporting:
+
+ - Minimal interface
+ - Manual or proportional scaling
+ - Define max width or height
+ - Bounding box mode
+ - External images support
+ - Dummy Image extension support
+
+### Examples
+
+- Output original size:  
+    `<xsl:call-template name="img">`  
+    `   <xsl:with-param name="upload" select="$upload"/>`  
+    `</xsl:call-template>`  
+    
+- Force a specific size:  
+    `<xsl:call-template name="img">`  
+    `   <xsl:with-param name="upload" select="$upload"/>`  
+    `   <xsl:with-param name="w" select="300"/>`   
+    `   <xsl:with-param name="h" select="200"/>`  
+    `</xsl:call-template>`  
+  
+- Scale proportionally based on width or height constraint:  
+    `<xsl:call-template name="img">`  
+    `   <xsl:with-param name="upload" select="$upload"/>`  
+    `   <xsl:with-param name="w" select="300"/>`  
+    `</xsl:call-template>`  
+    
+- Scale proportionally within a set bounding box (square or not):  
+    `<xsl:call-template name="img">`  
+    `   <xsl:with-param name="upload" select="$upload"/>`  
+    `   <xsl:with-param name="mode" select="'fit'"/>`  
+    `   <xsl:with-param name="w" select="400"/>`  
+    `   <xsl:with-param name="h" select="400"/>`  
+    `</xsl:call-template>`  
+    
+- Scale only if over set dimensions. 'max' mode. Can use w, h or both:  
+    `<xsl:call-template name="img">`  
+    `   <xsl:with-param name="upload" select="$upload"/>`  
+    `   <xsl:with-param name="mode" select="'max'"/>`  
+    `   <xsl:with-param name="w" select="400"/>`  
+    `   <xsl:with-param name="h" select="300"/>`  
+    `</xsl:call-template>`  
+    
+- Use and external image (w and h needed as we don't have XML metadata on the fetched image):  
+    `<xsl:call-template name="img">`  
+    `   <xsl:with-param name="JITexternal" select="'images.apple.com/home/images/mbp_hero20110224.png'"/>`  
+    `   <xsl:with-param name="w" select="400"/>`  
+    `   <xsl:with-param name="h" select="200"/>`  
+    `</xsl:call-template>`  
+    
+- Generate a dummy image (needs Dummy Image extension):  
+    `<xsl:call-template name="img">`  
+    `   <xsl:with-param name="w" select="200"/>`  
+    `   <xsl:with-param name="h" select="150"/>`  
+    `</xsl:call-template>`  
+    
+- Add attributes (works in all modes)
+    `<xsl:call-template name="img">`  
+    `   <xsl:with-param name="upload" select="$upload"/>`  
+    `   <xsl:with-param name="w" select="500"/>`  
+    `   <xsl:with-param name="class" select="'someclass anotherclass'"/>`  
+    `   <xsl:with-param name="id" select="'myID'"/>`  
+    `   <xsl:with-param name="title" select="'Herr Title'"/>`  
+    `</xsl:call-template>`  
