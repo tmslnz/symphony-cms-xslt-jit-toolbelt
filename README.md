@@ -31,54 +31,61 @@ Magical image resizer and <img/> tag generator, with fallback to [DummyImage gen
 ## Examples
 
 ### Output original size:
-`<xsl:call-template name="img">
-<xsl:with-param name="upload" select="$upload"/>
+`<xsl:call-template name="img">  
+<xsl:with-param name="upload" select="$upload"/>  
 </xsl:call-template>`
 
 ### Force a specific size:
-`<xsl:call-template name="img">
-<xsl:with-param name="upload" select="$upload"/>
-<xsl:with-param name="w" select="300"/>
-<xsl:with-param name="h" select="200"/>
+`<xsl:call-template name="img">  
+<xsl:with-param name="upload" select="$upload"/>  
+<xsl:with-param name="w" select="300"/>  
+<xsl:with-param name="h" select="200"/>  
 </xsl:call-template>`
 
 ### Scale proportionally based on width or height constraint:
-`<xsl:call-template name="img">
-<xsl:with-param name="upload" select="$upload"/>
-<xsl:with-param name="w" select="300"/>
+`<xsl:call-template name="img">  
+<xsl:with-param name="upload" select="$upload"/>  
+<xsl:with-param name="w" select="300"/>  
 </xsl:call-template>`
 
 ### Scale proportionally within a set bounding box (square or not):
-`<xsl:call-template name="img">
-<xsl:with-param name="upload" select="$upload"/>
-<xsl:with-param name="mode" select="'fit'"/>
-<xsl:with-param name="w" select="400"/>
-<xsl:with-param name="h" select="400"/>
+`<xsl:call-template name="img">  
+<xsl:with-param name="upload" select="$upload"/>  
+<xsl:with-param name="mode" select="'fit'"/>  
+<xsl:with-param name="w" select="400"/>  
+<xsl:with-param name="h" select="400"/>  
 </xsl:call-template>`
 
 ### Use and external image (w and h needed as we don't have XML metadata on the fetched image):
-`<xsl:call-template name="img">
-<xsl:with-param name="JITexternal" select="'images.apple.com/home/images/mbp_hero20110224.png'"/>
-<xsl:with-param name="w" select="400"/>
-<xsl:with-param name="h" select="200"/>
+`<xsl:call-template name="img">   
+<xsl:with-param name="JITexternal" select="'images.apple.com/home/images/mbp_hero20110224.png'"/>  
+<xsl:with-param name="w" select="400"/>  
+<xsl:with-param name="h" select="200"/>  
 </xsl:call-template>`
 
 ### Generate a dummy image (needs Dummy Image extension)
-`<xsl:call-template name="img">
-<xsl:with-param name="w" select="200"/>
-<xsl:with-param name="h" select="150"/>
+`<xsl:call-template name="img">  
+<xsl:with-param name="w" select="200"/>   
+<xsl:with-param name="h" select="150"/>  
 </xsl:call-template>`
+
+### Use it as a MATCHED template
+`<xsl:apply-templates match="upload">  
+<xsl:with-param name="w" select="300"/>  
+</xsl:apply-templates>``
 
 ### Add attributes (works in all modes)
-`<xsl:call-template name="img">
-<xsl:with-param name="upload" select="$upload"/>
-<xsl:with-param name="w" select="500"/>
-<xsl:with-param name="class" select="'someclass anotherclass'"/>
-<xsl:with-param name="id" select="'myID'"/>
-<xsl:with-param name="title" select="'Herr Title'"/>
+`<xsl:call-template name="img">  
+<xsl:with-param name="upload" select="$upload"/>  
+<xsl:with-param name="w" select="500"/>  
+<xsl:with-param name="class" select="'someclass anotherclass'"/>  
+<xsl:with-param name="id" select="'myID'"/>  
+<xsl:with-param name="title" select="'Herr Title'"/>  
 </xsl:call-template>`
 
-
+## Notes
+When this teamplate is used as a match rather than called by name, the DummyImage mode is effectively inaccessible.  
+Besides, it wouldn't make sense since you have a match, then you have an upload.
 
 By The Workers London Ltd. [theworkers.net][w] - [io@theworkers.net][io]
 
