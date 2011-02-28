@@ -82,7 +82,7 @@
 	    </xsl:call-template>
 	    
 	    Use it as a MATCHED template
-	    <xsl:apply-templates match="upload">
+	    <xsl:apply-templates match="upload" mode="magical.jit">
 	    <xsl:with-param name="w" select="300"/>
 	    </xsl:apply-templates>
 	    
@@ -109,12 +109,17 @@
 	    [io]: mailto:io@theworkers.net
 	-->
     
-
+    
+    
+    <!-- TMEPLATE -->
     <!-- Controller (use it NAMED or MATCHED)-->
     <xsl:template name="img" match="*" mode="magical.jit">
         <xsl:param name="upload" select="."/><!-- If not provided falls back to DummyImage extension -->
         <xsl:param name="value-only"/><!-- Require either w or h and it will only return the numeric value, not the whole <img/> tag -->
         <xsl:param name="mode" select="'normal'"/><!-- string: normal, fit, max  -->
+        <xsl:param name="gridsize"/>
+        <xsl:param name="gridunits-w"/>
+        <xsl:param name="gridunits-h"/>
         <xsl:param name="JITmode" select="2"/>
         <xsl:param name="JITcenter" select="5"/>
         <xsl:param name="JITexternal" select="0"/><!-- Optionally specify external site URL to image -->
@@ -142,136 +147,27 @@
             </xsl:if>
         </xsl:variable>
         
-        <!-- Figure out ratio of original and compare to ratio of container if in 'fit' mode -->
-        <xsl:variable name="original-ratio">
-            <xsl:if test="$upload != ''">
-                <xsl:call-template name="wh_ratio">
-                    <xsl:with-param name="upload" select="$upload"/>
-                </xsl:call-template>
-            </xsl:if>
-        </xsl:variable>
-        
-        <xsl:variable name="fit-ratio">
-            <xsl:if test="$w and $h">
-                <xsl:call-template name="wh_ratio">
-                    <xsl:with-param name="w" select="$w"/>
-                    <xsl:with-param name="h" select="$h"/>
-                </xsl:call-template>
-            </xsl:if>
-        </xsl:variable>
-        
         <xsl:variable name="img_w">
-            <xsl:choose>
-                <xsl:when test="$upload = ''">
-                    <xsl:value-of select="$w"/>
-                </xsl:when>
-                <xsl:when test="$mode = 'normal'">
-                    <xsl:call-template name="rescale">
-                        <xsl:with-param name="upload" select="$upload"/>
-                        <xsl:with-param name="return" select="'w'"/>
-                        <xsl:with-param name="w" select="$w"/>
-                        <xsl:with-param name="h" select="$h"/>
-                    </xsl:call-template>
-                </xsl:when>
-                <xsl:when test="$mode = 'max'">
-                    <xsl:choose>
-                        <xsl:when test="($upload/meta/@width &gt; $w) and ($w != '')">
-                            <xsl:call-template name="rescale">
-                                <xsl:with-param name="upload" select="$upload"/>
-                                <xsl:with-param name="return" select="'w'"/>
-                                <xsl:with-param name="w" select="$w"/>
-                            </xsl:call-template>
-                        </xsl:when>
-                        <xsl:when test="($upload/meta/@height &gt; $h) and ($h != '')">
-                            <xsl:call-template name="rescale">
-                                <xsl:with-param name="upload" select="$upload"/>
-                                <xsl:with-param name="return" select="'w'"/>
-                                <xsl:with-param name="h" select="$h"/>
-                            </xsl:call-template>
-                        </xsl:when>
-                        <xsl:otherwise>
-                            <xsl:value-of select="$upload/meta/@width"/>
-                        </xsl:otherwise>
-                    </xsl:choose>
-                </xsl:when>
-                <xsl:when test="$mode = 'fit'">
-                    <xsl:if test="$original-ratio &gt; $fit-ratio">
-                        <xsl:call-template name="rescale">
-                            <xsl:with-param name="upload" select="$upload"/>
-                            <xsl:with-param name="return" select="'w'"/>
-                            <xsl:with-param name="w" select="$w"/>
-                        </xsl:call-template>
-                    </xsl:if>
-                    <xsl:if test="$original-ratio &lt; $fit-ratio">
-                        <xsl:call-template name="rescale">
-                            <xsl:with-param name="upload" select="$upload"/>
-                            <xsl:with-param name="return" select="'w'"/>
-                            <xsl:with-param name="h" select="$h"/>
-                        </xsl:call-template>
-                    </xsl:if>
-                </xsl:when>
-            </xsl:choose>
+            <xsl:call-template name="core-logic">
+                <xsl:with-param name="return" select="'w'"/>
+                <xsl:with-param name="upload" select="$upload"/>
+                <xsl:with-param name="mode" select="$mode"/>
+                <xsl:with-param name="w" select="$w"/>
+                <xsl:with-param name="h" select="$h"/>
+                <xsl:with-param name="gridsize" select="$gridsize"/>
+            </xsl:call-template>
         </xsl:variable>
-        
+            
         <xsl:variable name="img_h">
-            <xsl:choose>
-                
-                <xsl:when test="$upload = ''">
-                    <xsl:value-of select="$h"/>
-                </xsl:when>
-                
-                <xsl:when test="$mode = 'normal'">
-                    <xsl:call-template name="rescale">
-                        <xsl:with-param name="upload" select="$upload"/>
-                        <xsl:with-param name="return" select="'h'"/>
-                        <xsl:with-param name="w" select="$w"/>
-                        <xsl:with-param name="h" select="$h"/>
-                    </xsl:call-template>
-                </xsl:when>
-                
-                <xsl:when test="$mode = 'max'">
-                    <xsl:choose>
-                        <xsl:when test="($upload/meta/@width &gt; $w) and ($w != '')">
-                            <xsl:call-template name="rescale">
-                                <xsl:with-param name="upload" select="$upload"/>
-                                <xsl:with-param name="return" select="'h'"/>
-                                <xsl:with-param name="w" select="$w"/>
-                            </xsl:call-template>
-                        </xsl:when>
-                        <xsl:when test="($upload/meta/@height &gt; $h) and ($h != '')">
-                            <xsl:call-template name="rescale">
-                                <xsl:with-param name="upload" select="$upload"/>
-                                <xsl:with-param name="return" select="'h'"/>
-                                <xsl:with-param name="h" select="$h"/>
-                            </xsl:call-template>
-                        </xsl:when>
-                        
-                        <xsl:otherwise>
-                            <xsl:value-of select="$upload/meta/@height"/>
-                        </xsl:otherwise>
-                    </xsl:choose>
-                </xsl:when>
-                
-                <xsl:when test="$mode = 'fit'">
-                    <xsl:if test="$original-ratio &gt; $fit-ratio">
-                        <xsl:call-template name="rescale">
-                            <xsl:with-param name="upload" select="$upload"/>
-                            <xsl:with-param name="return" select="'h'"/>
-                            <xsl:with-param name="w" select="$w"/>
-                        </xsl:call-template>
-                    </xsl:if>
-                    <xsl:if test="$original-ratio &lt; $fit-ratio">
-                        <xsl:call-template name="rescale">
-                            <xsl:with-param name="upload" select="$upload"/>
-                            <xsl:with-param name="return" select="'h'"/>
-                            <xsl:with-param name="h" select="$h"/>
-                        </xsl:call-template>
-                    </xsl:if>
-                </xsl:when>
-            </xsl:choose>
+            <xsl:call-template name="core-logic">
+                <xsl:with-param name="return" select="'h'"/>
+                <xsl:with-param name="upload" select="$upload"/>
+                <xsl:with-param name="mode" select="$mode"/>
+                <xsl:with-param name="w" select="$w"/>
+                <xsl:with-param name="h" select="$h"/>
+                <xsl:with-param name="gridsize" select="$gridsize"/>
+            </xsl:call-template>
         </xsl:variable>
-        
-       
         
         <xsl:variable name="img_src">
             <xsl:choose>
@@ -313,6 +209,129 @@
     </xsl:template>
 
 
+
+    <!-- TMEPLATE -->
+    <!-- Width and Height Controller -->
+    <xsl:template name="core-logic">
+        <xsl:param name="upload"/>
+        <xsl:param name="return"/>
+        <xsl:param name="mode"/>
+        <xsl:param name="w"/>
+        <xsl:param name="h"/>
+        <xsl:param name="gridsize"/>
+        
+        <xsl:variable name="current-dim">
+            <xsl:choose>
+                <xsl:when test="$return = 'w'">
+                    <xsl:value-of select="$w"/>
+                </xsl:when>
+                <xsl:when test="$return = 'h'">
+                    <xsl:value-of select="$h"/>
+                </xsl:when>
+            </xsl:choose>
+        </xsl:variable>
+        
+        <xsl:variable name="original-dim">
+            <xsl:choose>
+                <xsl:when test="$return = 'w'">
+                    <xsl:value-of select="$upload/meta/@width"/>
+                </xsl:when>
+                <xsl:when test="$return = 'h'">
+                    <xsl:value-of select="$upload/meta/@height"/>
+                </xsl:when>
+            </xsl:choose>
+        </xsl:variable>
+        
+        <!-- Figure out ratio of original and compare to ratio of container if in 'fit' mode -->
+        <xsl:variable name="original-ratio">
+            <xsl:if test="$upload != ''">
+                <xsl:call-template name="wh_ratio">
+                    <xsl:with-param name="upload" select="$upload"/>
+                </xsl:call-template>
+            </xsl:if>
+        </xsl:variable>
+        
+        <xsl:variable name="fit-ratio">
+            <xsl:if test="$w and $h">
+                <xsl:call-template name="wh_ratio">
+                    <xsl:with-param name="w" select="$w"/>
+                    <xsl:with-param name="h" select="$h"/>
+                </xsl:call-template>
+            </xsl:if>
+        </xsl:variable>
+        
+        <xsl:variable name="value">
+            <xsl:choose>
+                
+                <xsl:when test="$upload = ''">
+                    <xsl:value-of select="$current-dim"/>
+                </xsl:when>
+                
+                <xsl:when test="$gridsize">
+                    <xsl:call-template name="rescale">
+                        <xsl:with-param name="upload" select="$upload"/>
+                        <xsl:with-param name="return" select="$return"/>
+                        <xsl:with-param name="gridsize" select="$gridsize"/>
+                    </xsl:call-template>
+                </xsl:when>
+                
+                <xsl:when test="$mode = 'normal'">
+                    <xsl:call-template name="rescale">
+                        <xsl:with-param name="upload" select="$upload"/>
+                        <xsl:with-param name="return" select="$return"/>
+                        <xsl:with-param name="w" select="$w"/>
+                        <xsl:with-param name="h" select="$h"/>
+                    </xsl:call-template>
+                </xsl:when>
+                
+                <xsl:when test="$mode = 'max'">
+                    <xsl:choose>
+                        <xsl:when test="($upload/meta/@width &gt; $w) and ($w != '')">
+                            <xsl:call-template name="rescale">
+                                <xsl:with-param name="upload" select="$upload"/>
+                                <xsl:with-param name="return" select="$return"/>
+                                <xsl:with-param name="w" select="$w"/>
+                            </xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test="($upload/meta/@height &gt; $h) and ($h != '')">
+                            <xsl:call-template name="rescale">
+                                <xsl:with-param name="upload" select="$upload"/>
+                                <xsl:with-param name="return" select="$return"/>
+                                <xsl:with-param name="h" select="$h"/>
+                            </xsl:call-template>
+                        </xsl:when>
+                        
+                        <xsl:otherwise>
+                            <xsl:value-of select="$original-dim"/>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </xsl:when>
+                
+                <xsl:when test="$mode = 'fit'">
+                    <xsl:if test="$original-ratio &gt; $fit-ratio">
+                        <xsl:call-template name="rescale">
+                            <xsl:with-param name="upload" select="$upload"/>
+                            <xsl:with-param name="return" select="$return"/>
+                            <xsl:with-param name="w" select="$w"/>
+                        </xsl:call-template>
+                    </xsl:if>
+                    <xsl:if test="$original-ratio &lt; $fit-ratio">
+                        <xsl:call-template name="rescale">
+                            <xsl:with-param name="upload" select="$upload"/>
+                            <xsl:with-param name="return" select="$return"/>
+                            <xsl:with-param name="h" select="$h"/>
+                        </xsl:call-template>
+                    </xsl:if>
+                </xsl:when>
+            </xsl:choose>
+        </xsl:variable>
+        
+        <xsl:value-of select="$value"/>
+    </xsl:template>
+
+
+
+    <!-- TMEPLATE -->
     <!-- Returns the Width/Height ratio -->
     <xsl:template name="wh_ratio">
         <xsl:param name="upload"/>
@@ -325,6 +344,7 @@
 
 
 
+    <!-- TMEPLATE -->
     <!-- Returns a number based on what dimension was requested
     and what required dimension was provided as a constraint -->
     <xsl:template name="rescale">
@@ -384,7 +404,14 @@
         <xsl:value-of select="round($result)"/>
     </xsl:template>
     
+    <xsl:template name="nearest-neighbor">
+        <xsl:param name="grid"/>
+        <xsl:param name="asd"></xsl:param>
+    </xsl:template>
     
+    
+    
+    <!-- TMEPLATE -->
     <!-- Iterates through all defined attributes and returns the full <img/> tag to the calling template -->
     <xsl:template name="return-full-tag-with-attributes">
         <xsl:param name="src"/>
