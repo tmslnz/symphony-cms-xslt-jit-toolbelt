@@ -81,6 +81,11 @@
 	    <xsl:with-param name="h" select="150"/>
 	    </xsl:call-template>
 	    
+	    Use it as a MATCHED template
+	    <xsl:apply-templates match="upload">
+	    <xsl:with-param name="w" select="300"/>
+	    </xsl:apply-templates>
+	    
 	    Add attributes (works in all modes)
 	    <xsl:call-template name="img">
 	    <xsl:with-param name="upload" select="$upload"/>
@@ -90,6 +95,10 @@
 	    <xsl:with-param name="title" select="'Herr Title'"/>
 	    </xsl:call-template>
 	    
+	    
+	    ### Notes
+	    When this teamplate is used as a match rather than called by name, the DummyImage mode is effectively inaccessible.
+	    Besides, it wouldn't make sense since you have a match, then you have an upload.
 	    
 	    
 	    Copyright © The Workers Ltd.  
@@ -101,9 +110,9 @@
 	-->
     
 
-    <!-- Controller -->
-    <xsl:template name="img">
-        <xsl:param name="upload"/><!-- If not provided falls back to DummyImage extension -->
+    <!-- Controller (use it NAMED or MATCHED)-->
+    <xsl:template name="img" match="*" mode="magical.jit">
+        <xsl:param name="upload" select="."/><!-- If not provided falls back to DummyImage extension -->
         <xsl:param name="value-only"/><!-- Require either w or h and it will only return the numeric value, not the whole <img/> tag -->
         <xsl:param name="mode" select="'normal'"/><!-- string: normal, fit, max  -->
         <xsl:param name="JITmode" select="2"/>
