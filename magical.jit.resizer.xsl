@@ -499,6 +499,7 @@
         <xsl:param name="class"/>
         <xsl:param name="alt"/>
         <xsl:param name="name"/>
+        <xsl:param name="title"/>
         <xsl:param name="longdesc"/>
         <xsl:param name="align"/>
         <xsl:param name="style"/>
@@ -513,6 +514,7 @@
             <attr name="class" value="{$class}"/>
             <attr name="alt" value="{$alt}"/>
             <attr name="name" value="{$name}"/>
+            <attr name="title" value="{$title}"/>
             <attr name="longdesc" value="{$longdesc}"/>
             <attr name="align" value="{$align}"/>
             <attr name="style" value="{$style}"/>
